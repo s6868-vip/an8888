@@ -604,5 +604,260 @@
             });
         })();
     </script>
+
+<!-- ================= 3D 空间不规则运动 + 奢华黑金书法标签 开始 ================= -->
+<!-- 引入书法 Font (Zhi Mang Xing / Ma Shan Zheng) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
+
+<!-- 3D 粒子 Canvas 层 -->
+<canvas id="trail-canvas-3d" style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:999998;"></canvas>
+
+<style>
+    /* 3D 视角透视容器 */
+    #flying-3d-wrapper {
+        position: fixed;
+        top: 120px;
+        left: 40px;
+        z-index: 999999;
+        perspective: 1000px; /* 赋予真实的 3D 景深 */
+        will-change: transform, left, top;
+    }
+
+    /* 3D 奢华黑金徽章卡片 */
+    .badge-3d-card {
+        position: relative;
+        padding: 20px 36px;
+        background: linear-gradient(135deg, rgba(20, 20, 25, 0.85) 0%, rgba(5, 5, 8, 0.95) 100%);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        /* 不规则切角与金丝流光外边框 */
+        border: 1.5px solid rgba(234, 179, 8, 0.4);
+        border-radius: 28px 8px 28px 8px; /* 打破规则对称框形状 */
+        box-shadow: 
+            0 25px 50px -12px rgba(0, 0, 0, 0.9),
+            0 0 30px rgba(234, 179, 8, 0.2),
+            inset 0 1px 2px rgba(255, 255, 255, 0.3),
+            inset 0 -2px 10px rgba(212, 175, 55, 0.15);
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        transform-style: preserve-3d;
+        transition: box-shadow 0.3s ease;
+    }
+
+    /* 扫光动画线 */
+    .badge-3d-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 60%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 236, 175, 0.25), transparent);
+        transform: skewX(-25deg);
+        animation: cardShine 4s infinite ease-in-out;
+    }
+
+    @keyframes cardShine {
+        0%, 70% { left: -100%; }
+        100% { left: 200%; }
+    }
+
+    .art-text-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        transform: translateZ(30px); /* 让文字在 3D 空间里向前浮起凸出 */
+    }
+
+    /* 第一排：始于1999（写意草书 + 1.5倍特大字号 + 霸气白金高光） */
+    .art-line-1 {
+        font-family: 'Zhi Mang Xing', 'Ma Shan Zheng', cursive, serif;
+        font-size: 52px; /* 特大霸气行书 */
+        font-weight: 400;
+        line-height: 1.05;
+        letter-spacing: 2px;
+        background: linear-gradient(180deg, #ffffff 0%, #fef08a 35%, #eab308 85%, #ca8a04 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        /* 金石高光发光晕 */
+        filter: drop-shadow(0px 4px 12px rgba(234, 179, 8, 0.5));
+        white-space: nowrap;
+    }
+
+    /* 第二排：巅峰造极境（重金烫金书法，存在感强，不拉低档次） */
+    .art-line-2 {
+        font-family: 'Ma Shan Zheng', 'Zhi Mang Xing', cursive, serif;
+        font-size: 26px; /* 增加字号，提升权重与视觉分量 */
+        font-weight: 400;
+        letter-spacing: 6px;
+        text-indent: 6px;
+        background: linear-gradient(180deg, #ffffff 0%, #fcd34d 50%, #d97706 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.9));
+        margin-top: 2px;
+        white-space: nowrap;
+    }
+</style>
+
+<!-- 3D 悬浮标签 HTML 结构 -->
+<div id="flying-3d-wrapper">
+    <div class="badge-3d-card" id="badge-card">
+        <div class="art-text-wrap">
+            <div class="art-line-1">快三赔率 1.99 PK10赔率 9.95</div>
+            <div class="art-line-2">新人包赔 大额提款无忧 </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3D 物理姿态运动 + 拖尾粒子 JS 脚本 -->
+<script>
+    (function() {
+        var wrapper = document.getElementById('flying-3d-wrapper');
+        var card = document.getElementById('badge-card');
+        var canvas = document.getElementById('trail-canvas-3d');
+        if (!wrapper || !card || !canvas) return;
+
+        var ctx = canvas.getContext('2d');
+        var particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // 3D 空间坐标与物理速度
+        var posX = 60;
+        var posY = 120;
+        var vx = 1.8;
+        var vy = 1.2;
+        var maxSpeed = 2.8;
+
+        // 3D 角度参数
+        var rotX = 0;
+        var rotY = 0;
+        var rotZ = 0;
+
+        // 加速度 (不规则游走)
+        var ax = 0;
+        var ay = 0;
+        var time = 0;
+
+        // 粒子颜色 (黄金与白金金粉)
+        var goldColors = [
+            'rgba(254, 240, 138, ', // 闪耀金白
+            'rgba(234, 179, 8, ',   // 经典纯金
+            'rgba(217, 119, 6, '    // 暗金
+        ];
+
+        function addGoldDust(x, y, count) {
+            for (var i = 0; i < count; i++) {
+                particles.push({
+                    x: x + (Math.random() - 0.5) * 40,
+                    y: y + (Math.random() - 0.5) * 30,
+                    vx: (Math.random() - 0.5) * 1.2 - vx * 0.25,
+                    vy: (Math.random() - 0.5) * 1.2 - vy * 0.25,
+                    size: Math.random() * 3 + 1,
+                    color: goldColors[Math.floor(Math.random() * goldColors.length)],
+                    alpha: 1,
+                    decay: Math.random() * 0.025 + 0.015
+                });
+            }
+        }
+
+        function renderParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (var i = particles.length - 1; i >= 0; i--) {
+                var p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= p.decay;
+
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                    continue;
+                }
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = p.color + p.alpha + ')';
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = p.color + '0.9)';
+                ctx.fill();
+            }
+        }
+
+        card.addEventListener('mousemove', function(e) {
+            addGoldDust(e.clientX, e.clientY, 3);
+        });
+
+        // 核心 3D 姿态与不规则轨迹计算
+        function update3DMotion() {
+            time += 0.02;
+            var winW = window.innerWidth - wrapper.offsetWidth;
+            var winH = window.innerHeight - wrapper.offsetHeight;
+
+            // 1. 随机微调加速度
+            ax += (Math.random() - 0.5) * 0.18;
+            ay += (Math.random() - 0.5) * 0.18;
+
+            ax = Math.max(-0.25, Math.min(0.25, ax));
+            ay = Math.max(-0.25, Math.min(0.25, ay));
+
+            vx += ax;
+            vy += ay;
+
+            var speed = Math.sqrt(vx * vx + vy * vy);
+            if (speed > maxSpeed) {
+                vx = (vx / speed) * maxSpeed;
+                vy = (vy / speed) * maxSpeed;
+            }
+
+            posX += vx;
+            posY += vy;
+
+            // 2. 边界柔和平滑转向
+            var margin = 20;
+            if (posX < margin) { posX = margin; vx = Math.abs(vx) + 0.6; ax = 0.15; }
+            if (posX > winW - margin) { posX = winW - margin; vx = -Math.abs(vx) - 0.6; ax = -0.15; }
+            if (posY < margin) { posY = margin; vy = Math.abs(vy) + 0.6; ay = 0.15; }
+            if (posY > winH - margin) { posY = winH - margin; vy = -Math.abs(vy) - 0.6; ay = -0.15; }
+
+            // 3. 根据运动速度和正弦波，实时计算 3D 旋转角度 (RotateX, RotateY, RotateZ)
+            // 往左飞向左倾斜，往右飞向右倾斜，自带优雅的 3D 浮动摆角
+            var targetRotY = vx * 8 + Math.sin(time) * 10;
+            var targetRotX = -vy * 8 + Math.cos(time * 0.8) * 10;
+            var targetRotZ = Math.sin(time * 0.5) * 5;
+
+            // 平滑插值
+            rotX += (targetRotX - rotX) * 0.1;
+            rotY += (targetRotY - rotY) * 0.1;
+            rotZ += (targetRotZ - rotZ) * 0.1;
+
+            // 应用位置与 3D 姿态变形
+            wrapper.style.left = posX + 'px';
+            wrapper.style.top = posY + 'px';
+            card.style.transform = 'rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) rotateZ(' + rotZ + 'deg)';
+
+            // 喷射尾迹金粉
+            var centerX = posX + wrapper.offsetWidth / 2;
+            var centerY = posY + wrapper.offsetHeight / 2;
+            addGoldDust(centerX, centerY, 1);
+
+            renderParticles();
+            requestAnimationFrame(update3DMotion);
+        }
+
+        requestAnimationFrame(update3DMotion);
+    })();
+</script>
+<!-- ================= 3D 空间不规则运动 + 奢华黑金书法标签 结束 ================= -->
+
+
+    
 </body>
 </html>
