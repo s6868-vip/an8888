@@ -605,7 +605,7 @@
         })();
     </script>
 
-<!-- ================= 3D 精致等比缩小 + 悬停透明 + 手机版流畅运动标签 开始 ================= -->
+<!-- ================= 3D 奢华黑金标签（52px特大字 + 碰壁自动换行 + 手机防抖） 开始 ================= -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
@@ -619,37 +619,42 @@
         top: 100px;
         left: 20px;
         z-index: 999999;
-        perspective: 800px;
+        perspective: 900px;
         will-change: transform, left, top;
-        /* 允许鼠标事件穿透与触发 */
         pointer-events: auto;
+        /* 限制最大宽度，防止手机屏溢出 */
+        max-width: calc(100vw - 20px);
     }
 
-    /* 3D 奢华黑金徽章卡片（等比缩小版） */
+    /* 3D 奢华黑金徽章卡片 */
     .badge-3d-card {
         position: relative;
-        padding: 10px 22px; /* 大幅缩小内边距 */
+        padding: 16px 28px;
         background: linear-gradient(135deg, rgba(20, 20, 25, 0.88) 0%, rgba(5, 5, 8, 0.95) 100%);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1.2px solid rgba(234, 179, 8, 0.45);
-        border-radius: 18px 6px 18px 6px; /* 缩小的切角 */
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1.5px solid rgba(234, 179, 8, 0.45);
+        border-radius: 24px 8px 24px 8px;
         box-shadow: 
-            0 12px 30px -8px rgba(0, 0, 0, 0.85),
-            0 0 18px rgba(234, 179, 8, 0.2),
+            0 20px 45px -10px rgba(0, 0, 0, 0.9),
+            0 0 25px rgba(234, 179, 8, 0.2),
             inset 0 1px 1px rgba(255, 255, 255, 0.3);
         user-select: none;
         -webkit-tap-highlight-color: transparent;
         transform-style: preserve-3d;
-        /* 增加了 opacity 的平滑过渡，实现变透明效果 */
+        /* 平滑透明度过渡 */
         transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
         cursor: pointer;
+        
+        /* 核心换行逻辑：限制最多一行显示约4个字符，超出自动换行 */
+        max-width: 4.2em; 
+        box-sizing: border-box;
     }
 
-    /* 核心功能：鼠标悬停或移动端触摸时，变为高透明，不挡内容 */
+    /* 鼠标悬停 / 手机触摸时瞬间变为 10% 几乎透明 */
     #flying-3d-wrapper:hover .badge-3d-card,
     #flying-3d-wrapper:active .badge-3d-card {
-        opacity: 0.1 !important; /* 变成 10% 几乎透明 */
+        opacity: 0.1 !important;
         box-shadow: none;
     }
 
@@ -675,36 +680,38 @@
         align-items: center;
         justify-content: center;
         text-align: center;
-        transform: translateZ(20px);
+        transform: translateZ(25px);
+        word-break: break-all;
+        word-wrap: break-word;
+        white-space: normal; /* 允许换行 */
     }
 
-    /* 第一排：始于1999（等比缩小至 30px） */
+    /* 第一排：始于1999（还原上一版本 52px 霸气书法字） */
     .art-line-1 {
         font-family: 'Zhi Mang Xing', 'Ma Shan Zheng', cursive, serif;
-        font-size: 30px; 
+        font-size: 52px; 
         font-weight: 400;
-        line-height: 1.1;
-        letter-spacing: 1.5px;
+        line-height: 1.05;
+        letter-spacing: 2px;
         background: linear-gradient(180deg, #ffffff 0%, #fef08a 35%, #eab308 85%, #ca8a04 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        filter: drop-shadow(0px 2px 6px rgba(234, 179, 8, 0.4));
-        white-space: nowrap;
+        filter: drop-shadow(0px 3px 10px rgba(234, 179, 8, 0.45));
+        word-break: break-all;
     }
 
-    /* 第二排：巅峰造极境（等比缩小至 16px） */
+    /* 第二排：巅峰造极境（还原上一版本 26px 重金书法字） */
     .art-line-2 {
         font-family: 'Ma Shan Zheng', 'Zhi Mang Xing', cursive, serif;
-        font-size: 16px; 
+        font-size: 26px; 
         font-weight: 400;
         letter-spacing: 4px;
-        text-indent: 4px;
         background: linear-gradient(180deg, #ffffff 0%, #fcd34d 50%, #d97706 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        filter: drop-shadow(0px 2px 5px rgba(0, 0, 0, 0.8));
-        margin-top: 1px;
-        white-space: nowrap;
+        filter: drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.85));
+        margin-top: 4px;
+        word-break: break-all;
     }
 </style>
 
@@ -712,13 +719,13 @@
 <div id="flying-3d-wrapper">
     <div class="badge-3d-card" id="badge-card">
         <div class="art-text-wrap">
-            <div class="art-line-1">快三赔率1.99 赛车赔率 9.95</div>
-            <div class="art-line-2">玩家能赢到钱的平台</div>
+            <div class="art-line-1">始于1999</div>
+            <div class="art-line-2">巅峰造极境</div>
         </div>
     </div>
 </div>
 
-<!-- 完美适配移动端 + 3D 轨迹算法 JS -->
+<!-- 完美碰撞算法 + 3D 姿态运动 JS -->
 <script>
     (function() {
         var wrapper = document.getElementById('flying-3d-wrapper');
@@ -736,14 +743,13 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        // 初始物理位置与速度
+        // 物理坐标与速度
         var posX = 30;
         var posY = 80;
-        var vx = 1.4;
-        var vy = 1.0;
-        var maxSpeed = 2.2;
+        var vx = 1.6;
+        var vy = 1.2;
+        var maxSpeed = 2.4;
 
-        // 3D 旋转角度
         var rotX = 0, rotY = 0, rotZ = 0;
         var ax = 0, ay = 0, time = 0;
 
@@ -756,14 +762,14 @@
         function addGoldDust(x, y, count) {
             for (var i = 0; i < count; i++) {
                 particles.push({
-                    x: x + (Math.random() - 0.5) * 25,
+                    x: x + (Math.random() - 0.5) * 30,
                     y: y + (Math.random() - 0.5) * 20,
                     vx: (Math.random() - 0.5) * 1.0 - vx * 0.2,
                     vy: (Math.random() - 0.5) * 1.0 - vy * 0.2,
-                    size: Math.random() * 2.5 + 0.8,
+                    size: Math.random() * 2.8 + 0.8,
                     color: goldColors[Math.floor(Math.random() * goldColors.length)],
                     alpha: 0.9,
-                    decay: Math.random() * 0.03 + 0.015
+                    decay: Math.random() * 0.025 + 0.015
                 });
             }
         }
@@ -794,23 +800,24 @@
             addGoldDust(e.clientX, e.clientY, 2);
         });
 
-        // 核心 3D 姿态与手机端兼容算法
+        // 核心不规则运动与防抖反弹算法
         function update3DMotion() {
             time += 0.02;
 
-            // 获取实时元素尺寸，解决手机端卡死问题
-            var cardW = wrapper.offsetWidth || 160;
-            var cardH = wrapper.offsetHeight || 60;
-            
-            // 计算边界限制，防止手机端 bounds 变负数
+            var cardW = wrapper.offsetWidth || 180;
+            var cardH = wrapper.offsetHeight || 80;
+            var winW = window.innerWidth;
+            var winH = window.innerHeight;
+
+            // 严格防护边界，确保安全区恒正，消除卡死抖动
             var minX = 10;
             var minY = 10;
-            var maxX = Math.max(minX + 10, window.innerWidth - cardW - 10);
-            var maxY = Math.max(minY + 10, window.innerHeight - cardH - 10);
+            var maxX = Math.max(minX + 5, winW - cardW - 10);
+            var maxY = Math.max(minY + 5, winH - cardH - 10);
 
-            // 1. 随机加速度 (生成不规则游走)
-            ax += (Math.random() - 0.5) * 0.15;
-            ay += (Math.random() - 0.5) * 0.15;
+            // 1. 随机加速度 (生成游走效果)
+            ax += (Math.random() - 0.5) * 0.16;
+            ay += (Math.random() - 0.5) * 0.16;
 
             ax = Math.max(-0.2, Math.min(0.2, ax));
             ay = Math.max(-0.2, Math.min(0.2, ay));
@@ -827,13 +834,28 @@
             posX += vx;
             posY += vy;
 
-            // 2. 手机端/PC端 智能柔和转向碰撞
-            if (posX < minX) { posX = minX; vx = Math.abs(vx) + 0.3; ax = 0.1; }
-            if (posX > maxX) { posX = maxX; vx = -Math.abs(vx) - 0.3; ax = -0.1; }
-            if (posY < minY) { posY = minY; vy = Math.abs(vy) + 0.3; ay = 0.1; }
-            if (posY > maxY) { posY = maxY; vy = -Math.abs(vy) - 0.3; ay = -0.1; }
+            // 2. 边界反弹（带有单向锁保护，绝不抖动）
+            if (posX <= minX) {
+                posX = minX;
+                vx = Math.abs(vx) + 0.4;
+                ax = 0.1;
+            } else if (posX >= maxX) {
+                posX = maxX;
+                vx = -Math.abs(vx) - 0.4;
+                ax = -0.1;
+            }
 
-            // 3. 3D 姿态摆角
+            if (posY <= minY) {
+                posY = minY;
+                vy = Math.abs(vy) + 0.4;
+                ay = 0.1;
+            } else if (posY >= maxY) {
+                posY = maxY;
+                vy = -Math.abs(vy) - 0.4;
+                ay = -0.1;
+            }
+
+            // 3. 3D 姿态角度
             var targetRotY = vx * 7 + Math.sin(time) * 8;
             var targetRotX = -vy * 7 + Math.cos(time * 0.8) * 8;
             var targetRotZ = Math.sin(time * 0.5) * 4;
@@ -842,12 +864,12 @@
             rotY += (targetRotY - rotY) * 0.1;
             rotZ += (targetRotZ - rotZ) * 0.1;
 
-            // 渲染位置与视角
+            // 渲染位置与姿态
             wrapper.style.left = posX + 'px';
             wrapper.style.top = posY + 'px';
             card.style.transform = 'rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) rotateZ(' + rotZ + 'deg)';
 
-            // 粒子尾迹
+            // 抛洒粒子
             var centerX = posX + cardW / 2;
             var centerY = posY + cardH / 2;
             addGoldDust(centerX, centerY, 1);
@@ -859,8 +881,7 @@
         requestAnimationFrame(update3DMotion);
     })();
 </script>
-<!-- ================= 3D 精致等比缩小 + 悬停透明 + 手机版流畅运动标签 结束 ================= -->
-
+<!-- ================= 3D 奢华黑金标签 结束 ================= -->
 
     
 </body>
